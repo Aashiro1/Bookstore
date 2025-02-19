@@ -197,6 +197,12 @@ export function SignupForm({
                 Signup
               </Button>
             </div>
+            <div className="mt-4 text-center text-sm text-[#4A4A4A]">
+              Already have an account?{" "}
+              <a href="http://localhost:3000" className="underline underline-offset-4 text-[#8B5E3C]">
+                Login
+              </a>
+            </div>
           </form>
         </CardContent>
       </Card>
