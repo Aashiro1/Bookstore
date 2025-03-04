@@ -1,127 +1,101 @@
-"use client";
-import { useState } from "react";
-import Link from "next/link";
+'use client';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { register } from "@/app/utils/authService";
+import { useState } from "react";
 
-interface UserData {
-  username: string;
-  email: string;
-  password: string;
-  name?: string; // Optional
-  address?: string; // Optional
-  phone?: string; // Optional
-  confirmPassword?: string;
-}
 
 export function SignupForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  // State for form fields
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    address: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  // State for errors
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+}: React.ComponentPropsWithoutRef<"form">) {
+    // State for form fields
+    const [formData, setFormData] = useState({
+      username: "",
+      email: "",
+      address: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    });
   
-
-
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-    setErrors({ ...errors, [e.target.id]: "" }); // Clear errors on input
-  };
-
-  // Form validation logic
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.username.trim()) newErrors.name = "Name is required";
-    else if (formData.username.length < 6 || formData.username.length > 20)
-      newErrors.name = "Name must be 6 to 20 characters long";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Invalid email format";
-
-    if (!formData.address.trim()) newErrors.address = "Address is required";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    else if (!/^\d{10}$/.test(formData.phone))
-      newErrors.phone = "Enter a valid 10-digit phone number";
-
-    if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters long";
-
-    if (!formData.confirmPassword)
-      newErrors.confirmPassword = "Please confirm your password";
-    else if (formData.confirmPassword !== formData.password)
-      newErrors.confirmPassword = "Passwords do not match";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate form before submitting
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
+    // State for errors
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
     
-      // Register the user
-      await register(formData);
-      // Redirect to login page after successful registration
-      window.location.href = '/'
-    } catch (err) {
-      console.log("Registration failed", err);
-      // You can handle the error more explicitly, maybe show a message to the user
-    }
-  };
+  
+  
+    // Handle input changes
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, [e.target.id]: e.target.value });
+      setErrors({ ...errors, [e.target.id]: "" }); // Clear errors on input
+    };
+  
+    // Form validation logic
+    const validateForm = () => {
+      const newErrors: { [key: string]: string } = {};
+  
+      if (!formData.username.trim()) newErrors.name = "Name is required";
+      else if (formData.username.length < 2 || formData.username.length > 20)
+        newErrors.name = "Name must be 6 to 20 characters long";
+      if (!formData.email.trim()) newErrors.email = "Email is required";
+      else if (!/\S+@\S+\.\S+/.test(formData.email))
+        newErrors.email = "Invalid email format";
+  
+      if (!formData.address.trim()) newErrors.address = "Address is required";
+      if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+      else if (!/^\d{10}$/.test(formData.phone))
+        newErrors.phone = "Enter a valid 10-digit phone number";
+  
+      if (!formData.password) newErrors.password = "Password is required";
+      else if (formData.password.length < 6)
+        newErrors.password = "Password must be at least 6 characters long";
+  
+      if (!formData.confirmPassword)
+        newErrors.confirmPassword = "Please confirm your password";
+      else if (formData.confirmPassword !== formData.password)
+        newErrors.confirmPassword = "Passwords do not match";
+  
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    // Handle form submission
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      // Validate form before submitting
+      if (!validateForm()) {
+        return;
+      }
+  
+      try {
+      
+        // Register the user
+        await register(formData);
+        // Redirect to login page after successful registration
+        window.location.href = '/'
+      } catch (err) {
+        console.log("Registration failed", err);
+        // You can handle the error more explicitly, maybe show a message to the user
+      }
+    };
 
   return (
-    <div
-      className={cn("flex flex-col gap-6 bg-[#F5F1E3]", className)}
-      {...props}
-    >
-      <Card className="bg-[#EDE0D4]">
-        <CardHeader>
-          <CardTitle className="text-2xl flex justify-center text-[#2C3E50]">
-            Welcome to Book Heaven
-          </CardTitle>
-          <CardDescription className="text-[#4A4A4A] text-center">
-            Signup to explore and manage your bookstore collection
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              {/* Name */}
-              <div className="grid gap-2">
-                <Label htmlFor="username" className="text-[#2C3E50]">
-                  Name
-                </Label>
+    <form className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Welcome to Book Heaven</h1>
+        <p className="text-balance text-sm text-muted-foreground">
+        A room without books is like a body without a soul.
+        </p>
+      </div>
+      <div className="grid gap-6">
+      {/* Name Input */}
+        <div className="grid gap-2">
+         <Label htmlFor="username" className="text-[#2C3E50]">
+            Name
+            </Label>
                 <Input
                   id="username"
                   type="text"
@@ -134,9 +108,8 @@ export function SignupForm({
                   <p className="text-red-500 text-sm">{errors.name}</p>
                 )}
               </div>
-
-              {/* Email */}
-              <div className="grid gap-2">
+                {/* Email */}
+                <div className="grid gap-2">
                 <Label htmlFor="email" className="text-[#2C3E50]">
                   Email
                 </Label>
@@ -152,9 +125,8 @@ export function SignupForm({
                   <p className="text-red-500 text-sm">{errors.email}</p>
                 )}
               </div>
-
-              {/* Address */}
-              <div className="grid gap-2">
+          {/* Address */}
+          <div className="grid gap-2">
                 <Label htmlFor="address" className="text-[#2C3E50]">
                   Address
                 </Label>
@@ -170,9 +142,8 @@ export function SignupForm({
                   <p className="text-red-500 text-sm">{errors.address}</p>
                 )}
               </div>
-
-              {/* Phone Number */}
-              <div className="grid gap-2">
+                {/* Phone Number */}
+                <div className="grid gap-2">
                 <Label htmlFor="phone" className="text-[#2C3E50]">
                   Phone Number
                 </Label>
@@ -190,8 +161,8 @@ export function SignupForm({
                 )}
               </div>
 
-              {/* Password */}
-              <div className="grid gap-2">
+        {/* Password */}
+        <div className="grid gap-2">
                 <Label htmlFor="password" className="text-[#2C3E50]">
                   Password
                 </Label>
@@ -207,9 +178,8 @@ export function SignupForm({
                   <p className="text-red-500 text-sm">{errors.password}</p>
                 )}
               </div>
-
-              {/* Confirm Password */}
-              <div className="grid gap-2">
+      {/* Confirm Password */}
+      <div className="grid gap-2">
                 <Label htmlFor="confirmPassword" className="text-[#2C3E50]">
                   Confirm Password
                 </Label>
@@ -238,16 +208,10 @@ export function SignupForm({
             </div>
             <div className="mt-4 text-center text-sm text-[#4A4A4A]">
               Already have an account?{" "}
-              <Link
-                href="/"
-                className="underline underline-offset-4 text-[#8B5E3C]"
-              >
-                Login
-              </Link>
+              <a href="/login" className="underline underline-offset-4 text-[#8B5E3C]">
+              Login
+        </a>
             </div>
           </form>
-        </CardContent>
-      </Card>
-    </div>
   );
 }

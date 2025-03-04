@@ -37,19 +37,47 @@ export const register = async (userData: UserData) => {
 
 
 // Login and get tokens
-export const login = async (userData: UserData) => {
-    const response = await axios.post(`${API_URL}login/`, userData);
-    if (response.data.access) {
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
+// export const login = async (userData: UserData) => {
+//     const response = await axios.post(`${API_URL}login/`, userData);
+//     if (response.data.access) {
+//         localStorage.setItem('access_token', response.data.access);
+//         localStorage.setItem('refresh_token', response.data.refresh);
+//     }
+//     return response.data;
+// };
+export const login = async (formData: { username: string; password: string }) => {
+    try {
+      const res = await fetch(`${API_URL}login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json(); // Extract error message from response
+        throw new Error(errorData.error || "Invalid credentials");
+      }
+  
+      const data = await res.json();
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
+      localStorage.setItem("role", data.role); 
+  
+      return data.role; 
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw new Error("Something went wrong. Please try again.");
     }
-    return response.data;
-};
+  };
+  
+  
 
 // Logout function 
 export const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
+    window.location.href = '/'
 };
 
 // Refresh the access token

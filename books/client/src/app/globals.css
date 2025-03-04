@@ -87,6 +87,7 @@ body {
   }
 }
 
+<<<<<<< HEAD
 /* Media query for medium screens (Tablets and smaller) */
 @media (max-width: 1024px) {
   .custom-card {
@@ -168,3 +169,15 @@ body {
     height: 200px;
   }
 }
+=======
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+>>>>>>> nhuzbranch

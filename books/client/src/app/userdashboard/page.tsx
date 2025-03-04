@@ -1,17 +1,23 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import Header from "@/components/Header";
 import axios from "axios";
+
+const API_LINK = "http://localhost:8000/books/";
 
 type Book = {
   id: string;
@@ -21,23 +27,12 @@ type Book = {
   author: string;
   year?: number;
   price?: number;
+  image?: string;
 };
-
-const API_LINK = "http://localhost:8000/books/";
 
 export default function UserDashboard() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [books, setBooks] = useState<
-    {
-      id: number;
-      book_name: string;
-      author: string;
-      genre: string;
-      year: string;
-      description: string;
-      price: number;
-    }[]
-  >([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<Boolean>(false);
@@ -65,97 +60,114 @@ export default function UserDashboard() {
   }, []);
 
   return (
-    <div className="p-6 flex gap-6">
-      {/* Left: Book Table */}
-      <div className="w-2/3">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Available Book List
-        </h1>
-        <Table className="shadow-xl rounded-lg overflow-hidden border border-gray-200">
-          <TableHeader className="bg-[#EDE0D4]">
-            <TableRow>
-              <TableHead className="w-[150px] text-gray-700">Name</TableHead>
-              <TableHead className="text-gray-700">Genre</TableHead>
-              <TableHead className="text-gray-700">Author</TableHead>
-              <TableHead className="text-gray-700">Year</TableHead>
-              <TableHead className="text-right text-gray-700">Price</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {books.map((book) => (
-              <TableRow
-                key={book.id}
-                className="odd:bg-white even:bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
-                onClick={() => setSelectedBook(book)}
-              >
-                <TableCell className="font-semibold text-gray-900">
-                  {book.book_name}
-                </TableCell>
-                <TableCell>
-                  <Badge className="px-2 py-1 text-sm bg-[#9c5512]">
-                    {book.genre}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-gray-700">{book.author}</TableCell>
-                <TableCell className="text-gray-800">
-                  {book.year ?? "N/A"}
-                </TableCell>
-                <TableCell className="text-right font-semibold text-gray-900">
-                  {book.price ? `$${book.price}` : "N/A"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="flex flex-col w-full min-h-screen">
+        <Header />
+        <div className="flex-1 flex flex-col md:flex-row gap-6 p-6 bg-[#f7dcb7]">
+          <div className="flex-1 overflow-x-auto">
+            <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+              Available Book List
+            </h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {books.map((book) => (
+                <div
+                  key={book.id}
+                  className="w-full"
+                  onClick={() => setSelectedBook(book)}
+                >
+                  <Card className="shadow-xl rounded-lg overflow-hidden bg-[#fceed9]">
+                    {book.image ? (
+                      <img
+                        src={book.image}
+                        alt={book.book_name}
+                        className="w-full h-64 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gray-300 flex items-center justify-center text-white">
+                        No Image
+                      </div>
+                    )}
+                    <CardContent className="p-4">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {book.book_name}
+                      </h3>
+                      <p className="text-sm text-gray-600">{book.genre}</p>
+                      <p className="text-right font-semibold text-gray-900">
+                        {book.price ? `$${book.price}` : "N/A"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {/* Right: Expanded Details */}
-      <div className="w-1/3">
-        <Card className="p-4 shadow-md border h-full">
-          <h2 className="text-2xl font-semibold mb-4">Book Details</h2>
-          {selectedBook ? (
-            <CardContent className="text-gray-600 space-y-2">
-              <p>
-                <span className="font-semibold text-gray-900">Name: </span>
-                {selectedBook.book_name}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Genre: </span>
-                {selectedBook.genre}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Author: </span>
-                {selectedBook.author}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">
-                  Description:{" "}
-                </span>
-                {selectedBook.description}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Year: </span>
-                {selectedBook.year ?? "N/A"}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Price: </span>
-                {selectedBook.price ? `$${selectedBook.price}` : "N/A"}
-              </p>
-              {isAuthenticated ? (
-                <Button className="mt-4 w-full bg-green-500 hover:bg-green-600">
-                  Add To Cart
-                </Button>
-              ) : (
-                <p className="bg-red-500 text-center p-1">Login First</p>
-              )}
-            </CardContent>
-          ) : (
-            <CardContent className="text-gray-500">
-              Click a book to see details.
-            </CardContent>
-          )}
-        </Card>
-      </div>
-    </div>
+          {/* Dialog for Book Details */}
+          <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
+            <DialogTrigger />
+            <DialogContent className="w-full md:w-[350px] p-6 mt-6 md:mt-0 bg-[#f3e4d0]">
+              <DialogHeader>
+                <DialogTitle>Book Details</DialogTitle>
+              </DialogHeader>
+              <DialogDescription>
+                {selectedBook ? (
+                  <div className="space-y-2 text-gray-600 ">
+                    <div>
+                    {selectedBook.image ? (
+                      <img
+                        src={selectedBook.image}
+                        alt={selectedBook.book_name}
+                        className="w-full h-60 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gray-300 flex items-center justify-center text-white">
+                        No Image
+                      </div>
+                    )}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">Name: </span>
+                      {selectedBook.book_name}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">Genre: </span>
+                      {selectedBook.genre}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">Author: </span>
+                      {selectedBook.author}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">
+                        Description:{" "}
+                      </span>
+                      {selectedBook.description}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">Year: </span>
+                      {selectedBook.year ?? "N/A"}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-900">Price: </span>
+                      {selectedBook.price ? `$${selectedBook.price}` : "N/A"}
+                    </div>
+                    {isAuthenticated ? (
+                      <Button className="mt-4 w-full bg-green-500 hover:bg-green-600">
+                        Add To Cart
+                      </Button>
+                    ) : (
+                      <div className="bg-red-500 text-center p-1">Login First</div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-gray-500">Select a book to see details.</div>
+                )}
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </main>
+    </SidebarProvider>
   );
 }

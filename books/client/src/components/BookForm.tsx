@@ -26,6 +26,7 @@ interface Book {
   year: number | string;
   description: string;
   price: number | string;
+  image?: File | null;
 }
 
 export function BookForm() {
@@ -36,6 +37,7 @@ export function BookForm() {
     year: "",
     description: "",
     price: "",
+    image: null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,6 +45,12 @@ export function BookForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setBook({ ...book, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setBook({ ...book, image: e.target.files[0] });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,6 +66,7 @@ export function BookForm() {
       return;
     }
 
+<<<<<<< HEAD
     // Convert year and price to numbers
     const payload = {
       ...book,
@@ -67,14 +76,37 @@ export function BookForm() {
 
     try {
       await axios.post(API_URL, payload, {
+=======
+    const formData = new FormData();
+    formData.append("book_name", book.book_name);
+    formData.append("genre", book.genre);
+    formData.append("author", book.author);
+    formData.append("year", book.year.toString());
+    formData.append("description", book.description);
+    formData.append("price", book.price.toString());
+    if (book.image) {
+      formData.append("image", book.image);
+    }
+
+    try {
+      await axios.post(API_URL, formData, {
+>>>>>>> nhuzbranch
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "multipart/form-data",
         },
       });
+<<<<<<< HEAD
       setBook({ book_name: "", genre: "", author: "", year: "", description: "", price: "" }); // Reset form
       setErrors({});
     } catch (error) {
       console.error("Error:", error);
+=======
+      setMessage("Book added successfully!");
+      setBook({ book_name: "", genre: "", author: "", year: "", description: "", price: "", image: null });
+    } catch (error) {
+      console.error("Error adding book:", error);
+      setMessage("Failed to add book.");
+>>>>>>> nhuzbranch
     } finally {
       setIsLoading(false);
     }
@@ -174,7 +206,6 @@ export function BookForm() {
           className="border p-2 rounded bg-[#FAF3E0] border-[#8B5E3C]"
           required
         />
-        {/* Dropdown for Genre */}
         <select
           name="genre"
           value={book.genre}
@@ -225,10 +256,23 @@ export function BookForm() {
           className="border p-2 rounded bg-[#FAF3E0] border-[#8B5E3C]"
           required
         />
+<<<<<<< HEAD
 >>>>>>> nhuzbranch
         <button
           type="submit"
           className="text-white p-2 rounded bg-[#8B5E3C] hover:bg-[#6D4C41] w-full"
+=======
+        {/* Image Upload Input */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="border p-2 rounded bg-[#FAF3E0] border-[#8B5E3C]"
+        />
+        <button
+          type="submit"
+          className="text-white p-2 rounded bg-[#8B5E3C] hover:bg-[#6D4C41]"
+>>>>>>> nhuzbranch
           disabled={isLoading}
         >
           {isLoading ? "Adding..." : "Add Book"}

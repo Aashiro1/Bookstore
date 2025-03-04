@@ -8,16 +8,35 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import DeleteBook from "./DeleteBook";
+import UpdateBook from "./UpdateBook";
 
 const API_LINK = "http://localhost:8000/books/";
 
 export function BookTable() {
   const [books, setBooks] = useState<
-    { id: number; book_name: string; author: string; genre: string; year: string; description: string; price: number }[]
+    {
+      id: number;
+      book_name: string;
+      author: string;
+      genre: string;
+      year: string;
+      description: string;
+      price: number;
+    }[]
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,12 +87,14 @@ export function BookTable() {
                 <TableCell>{book.description}</TableCell>
                 <TableCell>${book.price}</TableCell>
                 <TableCell className="text-right">
-                  <Button className="mr-2" variant="outline">
+                  {/* <Button className="mr-2" variant="outline">
                     <Link href={`/dashboard/${book.id}/update/`}> Edit</Link>
-                  </Button>
-                  <Button variant="destructive">
-                  <Link href={`/dashboard/${book.id}/delete/`}> Delete</Link>
-                  </Button>
+                  </Button> */}
+                  <div className="px-2 space-x-2">
+                    <UpdateBook id={book.id} />
+
+                    <DeleteBook id={book.id} />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

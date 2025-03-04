@@ -1,14 +1,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/appSideBar"
+import { AppSidebar } from "@/components/app-sidebar"
+import Header from "@/components/Header"
 
 export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
-    </SidebarProvider>
+      <div>   
+          <main>{children}</main>
+        </div>
+ 
   )
 }

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import BookListCreate, BookDetailUpdateDelete , RegisterView, LoginView
+from .views import BookListCreate, BookDetailUpdateDelete , RegisterView, LoginView, UserRoleView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("user-role/", UserRoleView.as_view(), name="user-role"),
 ]

@@ -3,9 +3,12 @@ from .models import Book, CustomUser
 
 
 class BookSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = Book
-        fields = ('__all__')
+        fields = '__all__'
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
